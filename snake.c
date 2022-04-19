@@ -129,7 +129,13 @@ int moveSnake(char **board, int rows, int cols, int **tail, int **head, int dire
     /*If the new head co-ordinate is the border then the user has lost or if the co-ordinate passes through the snake*/
     if (new_head_x < 1 || new_head_x >= cols - 1 || new_head_y < 1 || new_head_y >= rows - 1 || board[new_head_y][new_head_x] != ' ')
     {
-        /*If the new co-ordinate is the border don't move the snake and fire a warning message*/
+        /*If the new co-ordinate is the border or is backwards don't move the snake and fire a warning message*/
+        if (isBackwards(previousMoves, direction) == 1)
+        {
+            printf("You can't move backwards!\n");
+            awaitingInput();
+            return 1;
+        }
         if (new_head_x < 1 || new_head_x >= cols - 1 || new_head_y < 1 || new_head_y >= rows - 1)
         {
             printf("Cannot escape the map\n");
@@ -164,6 +170,41 @@ int moveSnake(char **board, int rows, int cols, int **tail, int **head, int dire
     }
     return 1;
 }
+
+int isBackwards(int **previousMoves, int direction)
+{
+    switch (*previousMoves[0])
+    {
+    case 1:
+        if (direction == 3)
+        {
+            return 1;
+        }
+        break;
+    case 2:
+        if (direction == 4)
+        {
+            return 1;
+        }
+        break;
+    case 3:
+        if (direction == 1)
+        {
+            return 1;
+        }
+        break;
+    case 4:
+        if (direction == 2)
+        {
+            return 1;
+        }
+        break;
+    default:
+        break;
+    }
+    return 0;
+}
+
 /*Takes in the direction and places - or | for the body behind the head based on the direction switch defined in getInput in game.c*/
 void placeBodyBehindHead(char **board, int **head, int direction, int **previousMoves)
 {

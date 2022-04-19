@@ -65,22 +65,22 @@ void createBorder(char **board, int rows, int cols)
             /*Top*/
             if (i == 0)
             {
-                board[i][j] = '-';
+                board[i][j] = '*';
             }
             /*Bottom*/
             else if (i == rows - 1)
             {
-                board[i][j] = '-';
+                board[i][j] = '*';
             }
             /*Left*/
             else if (j == 0)
             {
-                board[i][j] = '|';
+                board[i][j] = '*';
             }
             /*Right*/
             else if (j == cols - 1)
             {
-                board[i][j] = '|';
+                board[i][j] = '*';
             }
         }
     }
