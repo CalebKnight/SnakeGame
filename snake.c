@@ -130,7 +130,7 @@ int moveSnake(char **board, int rows, int cols, int **tail, int **head, int dire
     if (new_head_x < 1 || new_head_x >= cols - 1 || new_head_y < 1 || new_head_y >= rows - 1 || board[new_head_y][new_head_x] != ' ')
     {
         /*If the new co-ordinate is the border or is backwards don't move the snake and fire a warning message*/
-        if (isBackwards(previousMoves, direction) == 1)
+        if (isBackwards(previousMoves, direction) == 1 && UNBEATABLE != 1)
         {
             printf("You can't move backwards!\n");
             awaitingInput();
