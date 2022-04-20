@@ -36,6 +36,7 @@ int main(int argc, char const *argv[])
         printf("The snake size is too small\n");
         return 0;
     }
+    /* It should not be possible for this to return true due to the limitations on snake size above */
     if (rows < 5 || cols < 5)
     {
         printf("The map is too small\n");
