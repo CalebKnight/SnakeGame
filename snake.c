@@ -94,6 +94,7 @@ void displayCords(int **tail, int **head)
 /*Takes in board ,rows ,cols ,tail ,head ,direction ,previousMoves and the size of the snake as all this information is necessary to calculate both head and tail movement*/
 int moveSnake(char **board, int rows, int cols, int **tail, int **head, int direction, int **previousMoves, int snakeSize)
 {
+
     /*Store tail and head co-ordinates in variables for easy access to values*/
     int tail_x = *tail[0];
     int tail_y = *tail[1];
@@ -130,7 +131,7 @@ int moveSnake(char **board, int rows, int cols, int **tail, int **head, int dire
     if (new_head_x < 1 || new_head_x >= cols - 1 || new_head_y < 1 || new_head_y >= rows - 1 || board[new_head_y][new_head_x] != ' ')
     {
         /*If the new co-ordinate is the border or is backwards don't move the snake and fire a warning message*/
-        if (isBackwards(previousMoves, direction) == 1 && UNBEATABLE != 1)
+        if (isBackwards(previousMoves, direction) == 1)
         {
             printf("You can't move backwards!\n");
             awaitingInput();
@@ -149,25 +150,22 @@ int moveSnake(char **board, int rows, int cols, int **tail, int **head, int dire
             return 0;
         }
     }
-    else
-    {
-        /*Make current tail empty space*/
-        board[tail_y][tail_x] = ' ';
-        /*Shuffle the previous moves down so that the new move can be placed at the top e.g*/
-        /*[1][2][3] => [2][3][4]*/
-        shufflePreviousMovesDown(previousMoves, cols, direction, snakeSize);
-        /*Get the new tail location based on previousMoves*/
-        getNewTail(tail, board, rows, cols, previousMoves);
-        /*Make the new head a >^<v based on the current direction*/
-        board[new_head_y][new_head_x] = getHeadDirection(direction);
-        /*Place a - or | behind the head based on the direction*/
-        placeBodyBehindHead(board, head, direction, previousMoves);
-        /*Place new tail*/
-        board[*tail[1]][*tail[0]] = '#';
-        /*Update cords with new values*/
-        *head[0] = new_head_x;
-        *head[1] = new_head_y;
-    }
+    /*Make current tail empty space*/
+    board[tail_y][tail_x] = ' ';
+    /*Shuffle the previous moves down so that the new move can be placed at the top e.g*/
+    /*[1][2][3] => [2][3][4]*/
+    shufflePreviousMovesDown(previousMoves, cols, direction, snakeSize);
+    /*Get the new tail location based on previousMoves*/
+    getNewTail(tail, board, rows, cols, previousMoves);
+    /*Make the new head a >^<v based on the current direction*/
+    board[new_head_y][new_head_x] = getHeadDirection(direction);
+    /*Place a - or | behind the head based on the direction*/
+    placeBodyBehindHead(board, head, direction, previousMoves);
+    /*Place new tail*/
+    board[*tail[1]][*tail[0]] = '#';
+    /*Update cords with new values*/
+    *head[0] = new_head_x;
+    *head[1] = new_head_y;
     return 1;
 }
 

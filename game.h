@@ -2,5 +2,5 @@
 #define GAME_H
 void getInput(int *direction);
 void awaitingInput();
-void RunInputLoop(char **board, int rows, int cols, int **tail, int **head, int snakeSize);
+void RunInputLoop(char **board, int rows, int cols, int snakeSize);
 #endif

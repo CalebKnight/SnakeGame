@@ -33,16 +33,18 @@ void getInput(int *direction)
 void awaitingInput()
 {
     char input = ' ';
-    while (input != 'y')
+    while (input == ' ')
     {
-        printf("Please type 'y' to continue \n");
+        printf("Press any key to continue \n");
         scanf("%c", &input);
     }
 }
 
 /*A function that calls most functions defined in Snake.C to allow the snake to move*/
-void RunInputLoop(char **board, int rows, int cols, int **tail, int **head, int snakeSize)
+void RunInputLoop(char **board, int rows, int cols, int snakeSize)
 {
+    int **tail;
+    int **head;
     int direction = 1;
     /*Game status is initalised here, 0 means Game Over!, 1 means continue and 2 means the player has won*/
     int status = 1;
@@ -54,6 +56,8 @@ void RunInputLoop(char **board, int rows, int cols, int **tail, int **head, int 
     /*Snake is created here with snakeSize */
     createSnake(board, rows, cols, snakeSize);
     /*To keep track of the co-ordinate of the head and tail these values are initialised here as arrays of 2 integers*/
+    tail = (int **)malloc(sizeof(int *) * 2);
+    head = (int **)malloc(sizeof(int *) * 2);
     initCords(tail, head, cols, snakeSize);
     /*Places food on board as a win condition*/
     placeFood(board, rows, cols);

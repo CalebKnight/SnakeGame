@@ -15,8 +15,7 @@ int main(int argc, char const *argv[])
     int cols;
     int snakeSize;
     char **board;
-    int **tail;
-    int **head;
+
     /* If the arguments are entered incorrectly tells the user the correct syntax so they can type it in again*/
     if (argc != 4)
     {
@@ -32,13 +31,16 @@ int main(int argc, char const *argv[])
         printf("The snake size is too big\n");
         return 0;
     }
+    if (snakeSize < 3)
+    {
+        printf("The snake size is too small\n");
+        return 0;
+    }
 
-    tail = (int **)malloc(sizeof(int *) * 2);
-    head = (int **)malloc(sizeof(int *) * 2);
     /*Initialise board with height of rows and width of columns*/
     board = initBoard(rows, cols);
     initRandom();
     /*This Loop calls all the functions related to generation of the snake and it's movement in a seperate file for readability in main*/
-    RunInputLoop(board, rows, cols, tail, head, snakeSize);
+    RunInputLoop(board, rows, cols, snakeSize);
     return 0;
 }
