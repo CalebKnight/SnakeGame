@@ -168,7 +168,7 @@ int moveSnake(char **board, int rows, int cols, int **tail, int **head, int dire
     *head[1] = new_head_y;
     return 1;
 }
-
+// Checks to see if the input direction is backwards and returns 1 for true and 0 for false
 int isBackwards(int **previousMoves, int direction)
 {
     switch (*previousMoves[0])
