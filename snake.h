@@ -13,7 +13,7 @@ void placeBodyBehindHead(char **board, int **head, int direction, int **previous
 int moveSnake(char **board, int rows, int cols, int **tail, int **head, int direction, int **previousMoves, int snakeSize);
 void freePreviousMoves(int **previousMoves, int cols, int snakeSize);
 void initPreviousMoves(int **previousMoves, int cols, int snakeSize);
-int isBackwards(int **previousMoves, int direction);
+int isBackwards(int **previousMoves, int direction, int snakeSize);
 #endif
 #ifdef UNBEATABLE
 #define UNBEATABLE 1

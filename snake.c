@@ -131,7 +131,7 @@ int moveSnake(char **board, int rows, int cols, int **tail, int **head, int dire
     if (new_head_x < 1 || new_head_x >= cols - 1 || new_head_y < 1 || new_head_y >= rows - 1 || board[new_head_y][new_head_x] != ' ')
     {
         /*If the new co-ordinate is the border or is backwards don't move the snake and fire a warning message*/
-        if (isBackwards(previousMoves, direction) == 1)
+        if (isBackwards(previousMoves, direction, snakeSize) == 1)
         {
             printf("You can't move backwards!\n");
             awaitingInput();
@@ -169,9 +169,9 @@ int moveSnake(char **board, int rows, int cols, int **tail, int **head, int dire
     return 1;
 }
 /* Checks to see if the input direction is backwards and returns 1 for true and 0 for false */
-int isBackwards(int **previousMoves, int direction)
+int isBackwards(int **previousMoves, int direction, int snakeSize)
 {
-    switch (*previousMoves[0])
+    switch (*previousMoves[snakeSize - 1])
     {
     case 1:
         if (direction == 3)
