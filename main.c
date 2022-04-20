@@ -36,6 +36,11 @@ int main(int argc, char const *argv[])
         printf("The snake size is too small\n");
         return 0;
     }
+    if (rows < 5 || cols < 5)
+    {
+        printf("The map is too small\n");
+        return 0;
+    }
 
     /*Initialise board with height of rows and width of columns*/
     board = initBoard(rows, cols);
