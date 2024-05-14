@@ -2,6 +2,72 @@
 #include <stdlib.h>
 #include "snake.h"
 #include "game.h"
+
+
+/* A python ML model will be using this game to play, as such we want to print info about the game state to the model*/
+
+void printStateInfoInJson(char **board, int rows, int cols, int **tail, int **head, int direction, int **previousMoves, int snakeSize){
+    int i = 0;
+    int j = 0;
+    int *fruit_x = (int *)malloc(sizeof(int));
+    int *fruit_y = (int *)malloc(sizeof(int));
+    printf("{\n");
+    printf("\"board\": [");
+    for(i = 0; i < rows; i++){
+        printf("[");
+        for(j = 0; j < cols; j++){
+            printf("\"%c\"", board[i][j]);
+            if(j != cols - 1){
+                printf(",");
+            }
+        }
+        printf("]");
+        if(i != rows - 1){
+            printf(",");
+        }
+    }
+    printf("],\n");
+    printf("\"snakeSize\": %d,\n", snakeSize);
+    printf("\"rows\": %d,\n", rows);
+    printf("\"cols\": %d,\n", cols);
+    printf("\"head\": [%d, %d],\n", *head[0], *head[1]);
+    printf("\"tail\": [%d, %d],\n", *tail[0], *tail[1]);
+    printf("\"previousMoves\": [");
+    for(i = 0; i < snakeSize; i++){
+        printf("%d", *previousMoves[i]);
+        if(i != snakeSize - 1){
+            printf(",");
+        }
+    }
+    printf("],\n");
+    printf("direction: %d,\n", direction);
+    FindFruit(board, rows, cols, fruit_x, fruit_y);
+    printf("\"fruit\": [%d, %d]\n", *fruit_x, *fruit_y);
+    free(fruit_x);
+    free(fruit_y);
+    printf("}\n");
+}
+
+void FindFruit(char **board, int rows, int cols, int *fruit_x, int *fruit_y)
+{
+    int i;
+    int j;
+    for (i = 0; i < rows; i++)
+    {
+        for (j = 0; j < cols; j++)
+        {
+            if (board[i][j] == '&')
+            {
+                *fruit_x = j;
+                *fruit_y = i;
+                return;
+            }
+        }
+    }
+}
+ 
+
+
 /*Function was utilised in testing but could be used to take the input of rows and columns instead of using them as arguments in the terminal*/
 void getDimensions(int *rows, int *cols)
 {
@@ -45,26 +111,30 @@ void initCords(int **tail, int **head, int cols, int snakeSize)
 
 /*In order to determine where the snake has been to move the tail a queue system is created in the form of an array of integers*/
 /*The array is the length of the snake and is initialised with all horizontal moves as the snake starts as horizontal*/
-void initPreviousMoves(int **previousMoves, int cols, int snakeSize)
+void initPreviousMoves(int **previousMoves, int rows, int cols, int snakeSize)
 {
     int i;
+    int boardSize = rows * cols;
+    printf("Board size: %d\n", boardSize);
     /*Allocate memory*/
-    for (i = 0; i < snakeSize; i++)
+    for (i = 0; i < boardSize; i++)
     {
         previousMoves[i] = (int *)malloc(sizeof(int));
     }
     /*Set moves to horizontal right*/
-    for (i = 0; i < snakeSize; i++)
+    for (i = 0; i < boardSize; i++)
     {
         *previousMoves[i] = 2;
+        
     }
 }
 
 /*Frees memory allocated to previousMoves*/
-void freePreviousMoves(int **previousMoves, int cols, int snakeSize)
+void freePreviousMoves(int **previousMoves, int rows, int cols)
 {
     int i;
-    for (i = 0; i < snakeSize; i++)
+    int boardSize = rows * cols;
+    for (i = 0; i < boardSize; i++)
     {
         free(previousMoves[i]);
     }
@@ -124,7 +194,14 @@ int moveSnake(char **board, int rows, int cols, int **tail, int **head, int dire
     /*If the new head co-ordinate is the fruit the game ends and the user has won*/
     if (board[new_head_y][new_head_x] == '&')
     {
-        printf("You win!\n");
+        shufflePreviousMovesDown(previousMoves, cols, direction, snakeSize + 1, 1);
+        /*  Simply append the new head to the snake*/
+        /*  Place the new head*/
+        placeBodyBehindHead(board, head, direction);
+        board[new_head_y][new_head_x] = getHeadDirection(direction);
+        /* We don't place a new tail because we can just leave it there and move the head */
+        *head[0] = new_head_x;
+        *head[1] = new_head_y;
         return 2;
     }
     /*If the new head co-ordinate is the border then the user has lost or if the co-ordinate passes through the snake*/
@@ -141,7 +218,7 @@ int moveSnake(char **board, int rows, int cols, int **tail, int **head, int dire
         {
             printf("Cannot escape the map\n");
             awaitingInput();
-            return 1;
+            return 0;
         }
         /*If it's not unbeatable then end the game*/
         if (UNBEATABLE != 1)
@@ -154,13 +231,13 @@ int moveSnake(char **board, int rows, int cols, int **tail, int **head, int dire
     board[tail_y][tail_x] = ' ';
     /*Shuffle the previous moves down so that the new move can be placed at the top e.g*/
     /*[1][2][3] => [2][3][4]*/
-    shufflePreviousMovesDown(previousMoves, cols, direction, snakeSize);
+    shufflePreviousMovesDown(previousMoves, cols, direction, snakeSize, 0);
     /*Get the new tail location based on previousMoves*/
     getNewTail(tail, board, rows, cols, previousMoves);
     /*Make the new head a >^<v based on the current direction*/
     board[new_head_y][new_head_x] = getHeadDirection(direction);
     /*Place a - or | behind the head based on the direction*/
-    placeBodyBehindHead(board, head, direction, previousMoves);
+    placeBodyBehindHead(board, head, direction);
     /*Place new tail*/
     board[*tail[1]][*tail[0]] = '#';
     /*Update cords with new values*/
@@ -204,7 +281,7 @@ int isBackwards(int **previousMoves, int direction, int snakeSize)
 }
 
 /*Takes in the direction and places - or | for the body behind the head based on the direction switch defined in getInput in game.c*/
-void placeBodyBehindHead(char **board, int **head, int direction, int **previousMoves)
+void placeBodyBehindHead(char **board, int **head, int direction)
 {
     switch (direction)
     {
@@ -226,7 +303,7 @@ void placeBodyBehindHead(char **board, int **head, int direction, int **previous
 }
 /*Shuffle the previous moves down so that the new move can be placed at the top e.g */
 /*[1][2][3] => [2][3][4]*/
-void shufflePreviousMovesDown(int **previousMoves, int cols, int direction, int snakeSize)
+void shufflePreviousMovesDown(int **previousMoves, int cols, int direction, int snakeSize, int isEating)
 {
     int i;
     /*While less than the size of the snake shuffle down the moves*/
@@ -239,10 +316,11 @@ void shufflePreviousMovesDown(int **previousMoves, int cols, int direction, int 
             break;
         }
 
-        else
-        {
+        
+        if(isEating != 1){
             *previousMoves[i] = *previousMoves[i + 1];
         }
+        
     }
 }
 

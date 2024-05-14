@@ -1,0 +1,5 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/cknight/SnakeGame'
+gcc -Wall -ansi -pedantic -Werror main.c random.c game.c snake.c terminal.c board.c -o snake 
+make: Leaving directory '/home/cknight/SnakeGame'
+ 
